@@ -17,7 +17,7 @@ const Login = () => {
   }
   async function handleSubmit(e) {
     e.preventDefault();
-    // setIsLoadind(true);
+    setIsLoadind(true);
 
     try {
       const res = await fetch("http://localhost:4000/login", {
@@ -28,13 +28,12 @@ const Login = () => {
         body: JSON.stringify(dataForm),
         credentials: "include",
       });
-      console.log(dataForm);
-      console.log(res);
       if (res.ok) {
         setIsLoadind(false);
         navigate(`/`);
       }
     } catch (err) {
+      setIsLoadind(false);
       console.log(err.message);
     }
   }
