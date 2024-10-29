@@ -33,19 +33,23 @@ import Setting from "./components/Settings";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Contacts from "./components/Contacts";
+import Layout from "./components/Layout";
 
 export default function App() {
   return (
     <Routes>
-      <Route element={<Root />}>
-        <Route element={<SuspenseLayout />}>
-          <Route path="/" element={<Profile />} />
-          <Route path="/chats" element={<Chats />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/settings" element={<Setting />} />
+      <Route element={<SuspenseLayout />}>
+        <Route element={<Root />}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Profile />} />
+            <Route path="chats" element={<Chats />} />
+            <Route path="contacts" element={<Contacts />} />
+            <Route path="settings" element={<Setting />} />
+          </Route>
+
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
         </Route>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
   );
