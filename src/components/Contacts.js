@@ -18,10 +18,7 @@ const Contacts = () => {
       <div className=" items-center mb-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="ml-10 mt-5 text-2xl font-semibold">Contacts</h1>
-          <button
-            type="button"
-            className="p-2  text-white "
-          >
+          <button type="button" className="p-2  text-white ">
             <IoMdPersonAdd className="text-black dark:text-white" />
           </button>
         </div>
