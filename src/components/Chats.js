@@ -3,6 +3,8 @@ import { FaSearch } from "react-icons/fa";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
+import OnlineCard from "./OnlineCard";
+import MsgCard from "./MsgCard";
 
 const userData = [
   { id: 1, name: "Alice" },
@@ -52,7 +54,8 @@ const recentMessages = [
     user: "Charlie",
     message: "Looking forward to it.",
     time: "10:50 AM",
-  },{ id: 10, user: "Alice", message: "Hey there!", time: "10:12 AM" },
+  },
+  { id: 10, user: "Alice", message: "Hey there!", time: "10:12 AM" },
   {
     id: 12,
     user: "Bob",
@@ -96,7 +99,7 @@ const recentMessages = [
 const Chats = () => {
   return (
     <div className="h-screen dark:bg-[#303841] bg-[#F5F7FB] p-5">
-     <div className=" items-center mb-4">
+      <div className=" items-center mb-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="ml-10 mt-5 text-2xl font-semibold">Chats</h1>
         </div>
@@ -132,9 +135,9 @@ const Chats = () => {
             1024: {
               slidesPerView: 4,
             },
-            2000:{
-              slidesPerView:5,
-            }
+            2000: {
+              slidesPerView: 5,
+            },
           }}
           grabCursor={true}
           style={{ cursor: "grab" }}
@@ -142,14 +145,7 @@ const Chats = () => {
         >
           {userData.map((user) => (
             <SwiperSlide key={user.id} className=" flex justify-center">
-              <div className="relative flex flex-col items-center">
-                <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-                </div>
-                <span className="text-center text-sm dark:text-white text-gray-700">
-                  {user.name}
-                </span>
-              </div>
+              <OnlineCard user={user.name} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -158,26 +154,7 @@ const Chats = () => {
       <h1 className="font-semibold text-lg mt-4">Recent</h1>
       <div className="overflow-y-scroll h-3/5">
         {recentMessages.map((message) => (
-          <div
-            key={message.id}
-            className="flex items-center p-2  hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors duration-200"
-          >
-            <div className="w-12 h-12 rounded-full bg-[#7269EF] flex items-center justify-center relative">
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500  rounded-full"></span>
-            </div>
-            <div className="ml-3 flex justify-between items-center w-full whitespace-nowrap overflow-hidden">
-              <div className="flex-1 mr-2 overflow-ellipsis overflow-hidden">
-                <div className="font-semibold">{message.user}</div>
-                <div
-                  className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap"
-                  title={message.message}
-                >
-                  {message.message}
-                </div>
-              </div>
-              <div className="flex text-xs text-gray-400">{message.time}</div>
-            </div>
-          </div>
+          <MsgCard message={message} />
         ))}
       </div>
     </div>
