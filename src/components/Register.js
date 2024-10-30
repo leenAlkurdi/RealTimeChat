@@ -177,10 +177,10 @@ const Register = () => {
                   name="myfile"
                   accept="image/*"
                   className="block w-full text-sm text-gray-500   
-                file:mr-4 file:py-3 file:px-4   
-                file:rounded-lg file:border-0   
-                file:bg-violet-500 file:text-white   
-                hover:file:bg-violet-600"
+                      file:mr-4 file:py-3 file:px-4   
+                      file:rounded-lg file:border-0   
+                      file:bg-[#7269EF] file:text-white   
+                      hover:file:bg-violet-600"
                 />
               </div>
             </div>
@@ -188,7 +188,7 @@ const Register = () => {
             <div className="flex justify-between mt-5">
               <button
                 type="submit"
-                className="bg-violet-500 text-white py-2 px-4 rounded w-full"
+                className="bg-[#7269EF] text-white py-2 px-4 rounded w-full"
               >
                 Sign Up
               </button>
@@ -196,7 +196,7 @@ const Register = () => {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <Link to="/login" className="text-violet-500 hover:underline">
+            <Link to="/login" className="text-[#7269EF] hover:underline">
               Login here
             </Link>
           </p>

@@ -38,14 +38,36 @@ const Layout = () => {
       console.error("Error fetching data:", err);
     }
   }
-
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone: currentUser.phone }), 
+      });
+  
+      if (response.ok) {
+        navigate("/login"); 
+      } else {
+        console.error("Logout failed");
+        const error = await response.json();
+        console.error(error);
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  
+  };
   return isLoading ? (
     <Loading />
   ) : (
     currentUser && (
       <div className="flex gap-3 dark:bg-[#303841]">
         <div className="w-20	">
-          <Sidebar />
+          <Sidebar handleLogout={handleLogout} />
         </div>
         <div className="dark:text-white dark:bg-[#303841] bg-[#F5F7FB] h-screen w-11/12	">
           <Outlet />

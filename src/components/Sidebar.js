@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { IoLogOutOutline } from "react-icons/io5";
 import {
   IoMoon,
   IoPersonOutline,
@@ -16,13 +17,13 @@ const NAV_ITEMS = [
   { to: "/settings", icon: <IoSettingsOutline />, ariaLabel: "Settings" },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({handleLogout}) => {
   const [dark, setDark] = useState(false);
-
   const darkModeHandler = () => {
     setDark(!dark);
     document.body.classList.toggle("dark");
   };
+  
 
   const navLinkClass =
     "block text-2xl p-4 rounded transition duration-300 ease-in-out text-gray-600 text-center " +
@@ -32,7 +33,9 @@ const Sidebar = () => {
   return (
     <div className="items-center dark:bg-[#36404A] bg-white p-2 h-screen shadow-lg flex flex-col justify-between min-w-full">
       <div className="flex items-center mb-4">
-        <div className="w-14 h-14 rounded-full bg-[#7269EF]"></div>
+        <div className="w-24 h-24 rounded-full">
+          <img src="logo.png"></img>
+        </div>
       </div>
 
       <div>
@@ -48,6 +51,12 @@ const Sidebar = () => {
       </div>
       <div>
         <ul className="space-y-4">
+        <li className={navLinkClass} >
+          <button onClick={handleLogout}>
+            <IoLogOutOutline />
+          </button>
+            
+          </li>
           <li className="text-2xl p-4">
             <button onClick={darkModeHandler}>
               {dark ? <IoSunny className="text-white" /> : <IoMoon />}
