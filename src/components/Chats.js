@@ -9,14 +9,14 @@ import { useUserInfo } from "../userContext";
 const socket = io("http://localhost:4000", {
   transports: ["websocket"],
 });
-const userData = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
-  { id: 3, name: "Charlie" },
-  { id: 4, name: "Alice" },
-  { id: 5, name: "Bob" },
-  { id: 6, name: "Charlie" },
-];
+// const userData = [
+//   { id: 1, name: "Alice" },
+//   { id: 2, name: "Bob" },
+//   { id: 3, name: "Charlie" },
+//   { id: 4, name: "Alice" },
+//   { id: 5, name: "Bob" },
+//   { id: 6, name: "Charlie" },
+// ];
 
 const recentMessages = [
   { id: 1, user: "Alice", message: "Hey there!", time: "10:12 AM" },
@@ -113,7 +113,7 @@ const Chats = () => {
     socket.emit("joinChat", roomId);
     setCurrentRoom(roomId);
     console.log(`Entering room: ${roomId}`);
-    navigate(`/room/${user}`);
+    navigate(`/${user.phone}`);
   };
   useEffect(() => {
     setCurrentRoom(null);
@@ -246,10 +246,14 @@ const Chats = () => {
                 ),
               ].map((user, index) => (
                 <>
-                  <li key={index} value={user} onClick={() => enterRoom(user)}>
+                  {/* <li key={index} value={user} onClick={() => enterRoom(user)}>
                     {user}
-                  </li>
-                  <SwiperSlide key={user?.id} className=" flex justify-center">
+                  </li> */}
+                  <SwiperSlide
+                    key={user?.id}
+                    className=" flex justify-center"
+                    onClick={() => enterRoom(user)}
+                  >
                     <div className="relative flex flex-col items-center">
                       <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
