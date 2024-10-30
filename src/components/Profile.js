@@ -9,7 +9,13 @@ function Profile() {
   return (
     <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md  h-screen w-1/4		">
       <div className="flex flex-col items-center">
-        <div className="w-20 h-20 bg-gray-600 rounded-full"></div>
+        <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden">
+          <img
+            src={`http://localhost:4000/static/${currentUser.avatar}`}
+            alt="img"
+            className="w-auto h-auto"
+          />
+        </div>
         <h2 className="mt-4 text-lg font-semibold">{currentUser.name}</h2>
         <span className="text-[#7269EF] text-sm mb-12">Active</span>
       </div>

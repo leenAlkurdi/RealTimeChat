@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FiPhone } from "react-icons/fi";
-import { FaRegUser } from "react-icons/fa";
-import { RiLockPasswordLine } from "react-icons/ri";
 
 const Register = () => {
   const [isLoading, setIsLoadind] = useState(true);
@@ -38,7 +36,7 @@ const Register = () => {
   }, []);
 
   return (
-    <>
+    isLoading && (
       <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
           <h1 className="text-2xl font-bold mb-8 text-center"> Sign up</h1>
@@ -76,22 +74,22 @@ const Register = () => {
                 </div>
               </div>
               {/* <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm mb-2 dark:text-black absolute ml-5"
-                >
-                  User name
-                </label>
-                <FaRegUser />
-                <input
-                  type="text"
-                  id="username"
-                  name="name"
-                  className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
-                  required
-                  placeholder="Enter User name"
-                />
-              </div> */}
+          <label
+            htmlFor="username"
+            className="block text-sm mb-2 dark:text-black absolute ml-5"
+          >
+            User name
+          </label>
+          <FaRegUser />
+          <input
+            type="text"
+            id="username"
+            name="name"
+            className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
+            required
+            placeholder="Enter User name"
+          />
+        </div> */}
               <div className="relative">
                 <input
                   type="tel"
@@ -105,41 +103,41 @@ const Register = () => {
                 </div>
               </div>
               {/* <div>
-                <label
-                  htmlFor="phonenumber"
-                  className="block text-sm mb-2 dark:text-black absolute ml-5"
-                >
-                  Phone number
-                </label>
-                
+          <label
+            htmlFor="phonenumber"
+            className="block text-sm mb-2 dark:text-black absolute ml-5"
+          >
+            Phone number
+          </label>
+          
 
-                <input
-                  type="tel"
-                  id="phonenumber"
-                  name="phone"
-                  className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
-                  required
-                  placeholder="Enter Number"
-                />
-              </div> */}
+          <input
+            type="tel"
+            id="phonenumber"
+            name="phone"
+            className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
+            required
+            placeholder="Enter Number"
+          />
+        </div> */}
 
               {/* <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm mb-2 dark:text-black absolute ml-5"
-                >
-                  Password
-                </label>
-                <RiLockPasswordLine />
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
-                  required
-                  placeholder="Enter Password"
-                />
-              </div> */}
+          <label
+            htmlFor="password"
+            className="block text-sm mb-2 dark:text-black absolute ml-5"
+          >
+            Password
+          </label>
+          <RiLockPasswordLine />
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="peer py-3 pe-0 ps-8 block w-full bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-gray-200 text-sm focus:border-b-[#8b5cf6] dark:border-b-neutral-200 focus:ring-none focus:outline-none dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 dark:focus:border-b-[#8b5cf6]"
+            required
+            placeholder="Enter Password"
+          />
+        </div> */}
               <div className="relative">
                 <input
                   type="password"
@@ -179,10 +177,10 @@ const Register = () => {
                   name="myfile"
                   accept="image/*"
                   className="block w-full text-sm text-gray-500   
-                      file:mr-4 file:py-3 file:px-4   
-                      file:rounded-lg file:border-0   
-                      file:bg-violet-500 file:text-white   
-                      hover:file:bg-violet-600"
+                file:mr-4 file:py-3 file:px-4   
+                file:rounded-lg file:border-0   
+                file:bg-violet-500 file:text-white   
+                hover:file:bg-violet-600"
                 />
               </div>
             </div>
@@ -204,7 +202,7 @@ const Register = () => {
           </p>
         </div>
       </div>
-    </>
+    )
   );
 };
 
