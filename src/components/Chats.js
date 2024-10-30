@@ -153,8 +153,8 @@ const Chats = () => {
 
       <h1 className="font-semibold text-lg mt-4">Recent</h1>
       <div className="overflow-y-scroll h-3/5">
-        {recentMessages.map((message) => (
-          <MsgCard message={message} />
+        {recentMessages.map((message, i) => (
+          <MsgCard key={i} message={message} />
         ))}
       </div>
     </div>
