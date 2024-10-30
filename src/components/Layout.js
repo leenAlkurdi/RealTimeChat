@@ -16,7 +16,7 @@ const Layout = () => {
     setTimeout(() => {
       setIsLoadind(false);
     }, 2000);
-  }, []);
+  }, [isDataFetched, currentUser]);
   async function fetchProtectedResource() {
     setIsLoadind(true);
     try {
@@ -30,8 +30,6 @@ const Layout = () => {
         setIsLoadind(false);
       }
       const data = await response.json();
-
-      // setUserData(data);
       setCurrentUser(data);
       setIsDataFetched(true);
     } catch (err) {
@@ -46,11 +44,11 @@ const Layout = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phone: currentUser.phone }), 
+        body: JSON.stringify({ phone: currentUser.phone }),
       });
-  
+
       if (response.ok) {
-        navigate("/login"); 
+        navigate("/login");
       } else {
         console.error("Logout failed");
         const error = await response.json();
@@ -59,7 +57,6 @@ const Layout = () => {
     } catch (error) {
       console.error("Error during logout:", error);
     }
-  
   };
   return isLoading ? (
     <Loading />

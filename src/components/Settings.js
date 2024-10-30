@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useUserInfo } from "../userContext";
 
 const Setting = () => {
   const [isPersonalInfoOpen, setIsPersonalInfoOpen] = useState(true);
@@ -7,22 +8,39 @@ const Setting = () => {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [name, setName] = useState("user name");
-
+  const { currentUser } = useUserInfo();
   const handleSaveName = () => {
     setIsEditingName(false);
   };
+  const currentTime = () => {
+    const now = new Date();
 
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? String(hours).padStart(2, "0") : "12";
+
+    return `${hours}:${minutes}: ${ampm}`;
+  };
   return (
     <div className=" w-1/4 p-4 bg-[#F5F7FB] dark:bg-[#303841] dark:text-white rounded-lg shadow-md h-screen ">
-      {/* Settings Header */}
       <h1 className="text-lg md:text-xl font-semibold text-gray-700 dark:text-white text-center md:text-left">
         Settings
       </h1>
-
-      {/* Profile Picture and Status */}
       <div className="flex flex-col md:flex-row items-center mt-4 md:space-x-4">
         <div className="relative">
-          <div className=" w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-600"></div>
+          <div className=" w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-600 overflow-hidden">
+            <img
+              src={
+                currentUser?.avatar
+                  ? `http://localhost:4000/static/${currentUser?.avatar}`
+                  : "default.webp"
+              }
+              alt="img"
+              className="w-full h-full"
+            />
+          </div>
           <span className="absolute bottom-0 right-0 w-6 h-6 md:w-7 md:h-7 bg-[#7269EF] text-white rounded-full flex items-center justify-center text-xs cursor-pointer">
             ✎
           </span>
@@ -60,7 +78,7 @@ const Setting = () => {
                     className="border-b-2 border-gray-300 focus:border-[#7269EF] outline-none w-full md:w-auto"
                   />
                 ) : (
-                  <span>{name}</span>
+                  <span>{currentUser.name}</span>
                 )}
               </div>
               <button
@@ -77,10 +95,11 @@ const Setting = () => {
               </button>
             </div>
             <div>
-              <p className="font-semibold">Phone number: </p> +963 937 639 501
+              <p className="font-semibold">Phone number: </p>{" "}
+              {currentUser.phone}
             </div>
             <div>
-              <p className="font-semibold">Time: </p> 11:40 AM
+              <p className="font-semibold">Time: </p> {currentTime()}
             </div>
             <div>
               <p className="font-semibold">Location: </p> Damascus, Syria
@@ -89,7 +108,6 @@ const Setting = () => {
         )}
       </div>
 
-      {/* Privacy Section */}
       <div className="mt-4">
         <div
           className="flex items-center justify-between cursor-pointer"
@@ -108,7 +126,6 @@ const Setting = () => {
         )}
       </div>
 
-      {/* Security Section */}
       <div className=" mt-4">
         <div
           className="flex items-center justify-between cursor-pointer"
@@ -127,7 +144,6 @@ const Setting = () => {
         )}
       </div>
 
-      {/* Help Section */}
       <div className="mt-4">
         <div
           className="flex items-center justify-between cursor-pointer"

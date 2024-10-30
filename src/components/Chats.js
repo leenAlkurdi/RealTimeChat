@@ -147,7 +147,11 @@ const Chats = () => {
             }
           );
           const data = await response.json();
-          setConnectedUsers(data.connectedUsers);
+          const realData = data.connectedUsers.filter(
+            (ele) => ele["phone"] !== currentUser["phone"]
+          );
+
+          setConnectedUsers(realData);
         } catch (err) {
           console.error("fetchConnectedUsers", err.message);
         }
@@ -160,11 +164,9 @@ const Chats = () => {
               `http://localhost:4000/messages/${currentUser.phone}`
             );
             const data = await response.json();
-            const arr = data.messages
-              .map((ele) => ele["from"])
-              .concat(data.messages.map((ele) => ele["to"]));
+
             setUserChats(
-              [...new Set(arr)].filter((ele) => ele !== currentUser.phone)
+              data["chats"].filter((ele) => ele !== currentUser.phone)
             );
           } catch (err) {
             console.log(err.message);
@@ -192,6 +194,17 @@ const Chats = () => {
       };
     }
   }, [currentRoom, currentUser, navigate]);
+  function convertDate(rawDate) {
+    const date = new Date(rawDate);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${minutesStr} ${amPm}`;
+  }
   return (
     <div className="max-h-screen dark:bg-[#303841] bg-[#F5F7FB] px-5 chatsContainer ">
       <div className="">
@@ -267,8 +280,13 @@ const Chats = () => {
             ) : (
               <SwiperSlide className=" flex justify-center">
                 <div className="relative flex flex-col items-center">
-                  <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
+                  <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                    <img
+                      src="default.webp"
+                      alt="img"
+                      className="w-full h-full rounded-full"
+                    />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-700 border-2 border-white rounded-full"></span>
                   </div>
                   <span className="text-center text-sm dark:text-white text-gray-700">
                     None
@@ -279,29 +297,52 @@ const Chats = () => {
           </Swiper>
         </div>
 
-        <h1 className="font-semibold text-lg mt-4">Recent</h1>
-        <div className="overflow-y-scroll h-128">
-          {recentMessages.map((message) => (
-            <Link key={message.id} to={`${message.id}`}>
+        <h1 className="font-semibold text-lg mt-4">Messages</h1>
+        <div className="overflow-y-scroll chats">
+          {userChats.map((chat) => (
+            <Link key={chat?.id ? chat?.id : chat.phone} to={`${chat.phone}`}>
               <div
-                key={message.id}
+                key={chat?.id ? chat?.id : chat.phone}
                 className="flex items-center p-2  hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors duration-200"
               >
-                <div className="w-12 h-12 rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500  rounded-full"></span>
+                <div className="w-8 h-8   rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                  <img
+                    src={
+                      chat?.avatar
+                        ? `http://localhost:4000/static/${chat?.avatar}`
+                        : "default.webp"
+                    }
+                    alt="img"
+                    className=" h-full rounded-full"
+                  />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
                 </div>
                 <div className="ml-3 flex justify-between items-center w-full whitespace-nowrap overflow-hidden">
                   <div className="flex-1 mr-2 overflow-ellipsis overflow-hidden">
-                    <div className="font-semibold">{message.user}</div>
-                    <div
-                      className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap"
-                      title={message.message}
-                    >
-                      {message.message}
+                    <div className="font-semibold">{chat.name}</div>
+                    <div className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap">
+                      {/* {chat.messages.reduce((latest, current) =>
+                        new Date(current.time) > new Date(latest.time)
+                          ? current
+                          : latest
+                      )} */}
+                      {
+                        chat.messages.reduce((latest, current) =>
+                          new Date(current.time) > new Date(latest.time)
+                            ? current
+                            : latest
+                        )["message"]
+                      }
                     </div>
                   </div>
                   <div className="flex text-xs text-gray-400">
-                    {message.time}
+                    {convertDate(
+                      chat.messages.reduce((latest, current) =>
+                        new Date(current.time) > new Date(latest.time)
+                          ? current
+                          : latest
+                      )["time"]
+                    )}
                   </div>
                 </div>
               </div>
