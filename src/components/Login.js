@@ -112,14 +112,14 @@ const Login = () => {
           </div>  
           <button  
             type="submit"  
-            className="bg-violet-500 text-white py-2 px-4 w-full rounded"  
+            className="bg-[#7269EF] text-white py-2 px-4 w-full rounded"  
           >  
             Login  
           </button>  
         </form>  
         <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">  
           Don't have an account?{" "}  
-          <Link to="/register" className="text-violet-500 hover:underline">  
+          <Link to="/register" className="text-[#7269EF] hover:underline">  
             Create new account  
           </Link>  
         </p>  

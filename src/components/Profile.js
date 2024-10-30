@@ -4,7 +4,17 @@ function Profile() {
   const [isAboutOpen, setIsAboutOpen] = useState(true);
 
   const toggleAbout = () => setIsAboutOpen(!isAboutOpen);
-
+  const currentTime = () => {
+    const now = new Date(); 
+  
+    let hours = now.getHours(); 
+    const minutes = String(now.getMinutes()).padStart(2, '0'); 
+    const ampm = hours >= 12 ? 'PM' : 'AM'; 
+    hours = hours % 12; 
+    hours = hours ? String(hours).padStart(2, '0') : '12'; 
+  
+    return `${hours}:${minutes}: ${ampm}`; 
+  };
   return (
     <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md  h-screen w-1/4		">
       <div className="flex flex-col items-center">
@@ -42,7 +52,7 @@ function Profile() {
               +963 937 639 501
             </div>
             <div className="dark:text-white">
-              <p className="font-semibold dark:text-white">Time: </p> 11:40 AM
+              <p className="font-semibold dark:text-white">Time: </p> {currentTime()}
             </div>
             <div className="dark:text-white">
               <p className="font-semibold dark:text-white">Location: </p>{" "}
