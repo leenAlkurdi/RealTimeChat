@@ -160,12 +160,7 @@ const Chats = () => {
               `http://localhost:4000/messages/${currentUser.phone}`
             );
             const data = await response.json();
-            const arr = data.messages
-              .map((ele) => ele["from"])
-              .concat(data.messages.map((ele) => ele["to"]));
-            setUserChats(
-              [...new Set(arr)].filter((ele) => ele !== currentUser.phone)
-            );
+            setUserChats(data.chats);
           } catch (err) {
             console.log(err.message);
           }
@@ -281,10 +276,10 @@ const Chats = () => {
 
         <h1 className="font-semibold text-lg mt-4">Recent</h1>
         <div className="overflow-y-scroll h-128">
-          {recentMessages.map((message) => (
-            <Link key={message.id} to={`${message.id}`}>
+          {userChats.map((chat, i) => (
+            <Link key={chat.phone} to={`${chat.phone}`}>
               <div
-                key={message.id}
+                key={chat.phone}
                 className="flex items-center p-2  hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors duration-200"
               >
                 <div className="w-12 h-12 rounded-full bg-[#7269EF] flex items-center justify-center relative">
@@ -292,16 +287,16 @@ const Chats = () => {
                 </div>
                 <div className="ml-3 flex justify-between items-center w-full whitespace-nowrap overflow-hidden">
                   <div className="flex-1 mr-2 overflow-ellipsis overflow-hidden">
-                    <div className="font-semibold">{message.user}</div>
+                    <div className="font-semibold">{chat.name}</div>
                     <div
                       className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap"
-                      title={message.message}
+                      // title={messages.message}
                     >
-                      {message.message}
+                      {/* {message.message} */}
                     </div>
                   </div>
                   <div className="flex text-xs text-gray-400">
-                    {message.time}
+                    {/* {message.time} */}
                   </div>
                 </div>
               </div>
