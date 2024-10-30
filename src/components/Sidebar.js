@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { IoLogOutOutline } from "react-icons/io5";
 import {
   IoMoon,
   IoPersonOutline,
@@ -16,13 +17,13 @@ const NAV_ITEMS = [
   { to: "/settings", icon: <IoSettingsOutline />, ariaLabel: "Settings" },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({handleLogout}) => {
   const [dark, setDark] = useState(false);
-
   const darkModeHandler = () => {
     setDark(!dark);
     document.body.classList.toggle("dark");
   };
+  
 
   const navLinkClass =
     "block text-2xl p-4 rounded transition duration-300 ease-in-out text-gray-600 text-center " +
@@ -50,6 +51,12 @@ const Sidebar = () => {
       </div>
       <div>
         <ul className="space-y-4">
+        <li className={navLinkClass} >
+          <button onClick={handleLogout}>
+            <IoLogOutOutline />
+          </button>
+            
+          </li>
           <li className="text-2xl p-4">
             <button onClick={darkModeHandler}>
               {dark ? <IoSunny className="text-white" /> : <IoMoon />}
