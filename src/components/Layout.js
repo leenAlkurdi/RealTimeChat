@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Chat from "./Chat";
 import Loading from "./Loading";
-import Login from "./Login";
+import { useUserInfo } from "../userContext";
 const Layout = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoadind] = useState(true);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
+  const { currentUser, setCurrentUser } = useUserInfo();
   useEffect(() => {
     if (!isDataFetched) {
       fetchProtectedResource();
     }
     setTimeout(() => {
-      console.log(userData);
       setIsLoadind(false);
     }, 2000);
   }, []);
@@ -32,7 +31,8 @@ const Layout = () => {
       }
       const data = await response.json();
 
-      setUserData(data);
+      // setUserData(data);
+      setCurrentUser(data);
       setIsDataFetched(true);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -42,7 +42,7 @@ const Layout = () => {
   return isLoading ? (
     <Loading />
   ) : (
-    userData && (
+    currentUser && (
       <div className="flex gap-3 dark:bg-[#303841]">
         <div className="w-20	">
           <Sidebar />
