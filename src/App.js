@@ -45,7 +45,7 @@ export default function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Profile />} />
             <Route path="chats" element={<Chats />}>
-              <Route path=":name" element={<Chat />} />
+              <Route path=":phone" element={<Chat />} />
             </Route>
             <Route path="contacts" element={<Contacts />} />
             <Route path="settings" element={<Setting />} />

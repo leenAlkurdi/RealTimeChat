@@ -1,145 +1,216 @@
 import React, { useState, useEffect, useRef } from "react";
 import { RiSendPlane2Fill } from "react-icons/ri";
-
+import { useUserInfo } from "../userContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:4000", {
+  transports: ["websocket"],
+});
 const Chat = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      from: "Doris Brown",
-      to: "Leen",
-      text: "Yeah, everything is fine.",
-      time: "10:49 AM",
-    },
-    {
-      id: 2,
-      from: "Doris Brown",
-      to: "Leen",
-      text: "Next meeting tomorrow at 10:00 AM.",
-      time: "10:46 AM",
-    },
-    {
-      id: 3,
-      from: "Leen",
-      to: "Doris Brown",
-      text: "Sounds good!",
-      time: "10:47 AM",
-    },
-    {
-      id: 4,
-      from: "Leen",
-      to: "Doris Brown",
-      text: "Looking forward to it.",
-      time: "10:48 AM",
-    },
-  ]);
-
-  const [inputValue, setInputValue] = useState("");
+  const { currentUser } = useUserInfo();
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [contact, setContact] = useState(null);
+  const { phone } = useParams();
+  const navigate = useNavigate();
   const messagesEndRef = useRef(null);
-
-  const handleSendMessage = () => {
-    if (inputValue.trim()) {
-      const newMessage = {
-        id: messages.length + 1,
-        from: "Leen",
-        to: "Doris Brown",
-        text: inputValue,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      setInputValue("");
-    }
-  };
-
   useEffect(() => {
+    console.log("Chat useEffect");
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  useEffect(() => {
+    socket.emit("joinChat", { from: currentUser.phone, to: phone });
+    const handleMessage = ({ from, to, message }) => {
+      console.log(
+        `Received message from: ${from}, to: ${to}, message: ${message.message}`
+      );
 
-  const parseTime = (timeStr) => {
-    const [time, modifier] = timeStr.split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
-    if (modifier === "PM" && hours < 12) {
-      hours += 12;
+      if (from === phone && to === currentUser.phone) {
+        console.log("Message received:", message);
+        setMessages((prev) => [
+          ...prev,
+          {
+            from,
+            to,
+            message: message.message,
+            time: message.time,
+          },
+        ]);
+        console.log(messages);
+      }
+    };
+    socket.on("receiveMessage", handleMessage);
+    return () => {
+      socket.off("receiveMessage", handleMessage);
+      socket.emit("leaveChat", { from: currentUser.phone, to: phone });
+    };
+  }, [currentUser, phone]);
+  useEffect(() => {
+    console.log("Room useEffect");
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/messages/${currentUser.phone}/${phone}`
+        );
+        const data = await response.json();
+        const sortedMsgs = data.messages.sort(
+          (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+        );
+        setContact(data["user"]);
+        setMessages(sortedMsgs);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    fetchMessages();
+    return () => {};
+  }, [currentUser, phone, navigate]);
+
+  const handleSendMessage = async () => {
+    if (currentUser.phone && phone && message) {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/message-send/${currentUser.phone}/${phone}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+          }
+        );
+        if (!response.ok) {
+          const errorResponse = await response.json();
+          alert(`Error: ${errorResponse.error}`);
+        } else {
+          const msg = {
+            from: currentUser.phone,
+            to: phone,
+            message: message,
+            time: new Date().toISOString(),
+          };
+
+          socket.emit("sendMessage", {
+            from: currentUser.phone,
+            to: phone,
+            message: msg,
+          });
+          setMessages((prev) => [...prev, msg]);
+          setMessage("");
+        }
+      } catch (err) {
+        console.error("error", err.message);
+      }
+    } else {
+      alert("Invalid fields");
     }
-    if (modifier === "AM" && hours === 12) {
-      hours = 0;
-    }
-    return hours * 60 + minutes;
   };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  };
+  const currentTime = () => {
+    const now = new Date();
 
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? String(hours).padStart(2, "0") : "12";
+
+    return `${hours}:${minutes}: ${ampm}`;
+  };
   return (
     <div className="h-screen dark:bg-[#262E35] bg-white flex flex-col pb-4">
       <div className="flex items-center sticky top-0 z-10 space-x-2 border-b border-gray-300 dark:bg-[#262E35] bg-white p-2">
-        <div className="w-8 h-8 rounded-full bg-[#7269EF] flex items-center justify-center">
-          <span className="text-white font-bold">L</span>
+        <div className="w-8 h-8   rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+          <img
+            src={
+              contact?.avatar
+                ? `http://localhost:4000/static/${contact?.avatar}`
+                : "default.webp"
+            }
+            alt="img"
+            className=" h-full rounded-full max-w-none"
+          />
         </div>
         <span className="text-sm font-semibold dark:text-white text-gray-700">
-          Leen
+          {contact?.name}
         </span>
-        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
       </div>
 
       <div className="flex flex-col p-4 overflow-y-auto flex-1">
-        {messages
-          .slice()
-          .sort((a, b) => parseTime(a.time) - parseTime(b.time))
-          .map((message) => (
+        {messages.map((message, i) => (
+          <div
+            key={i}
+            className={`flex items-start m-2 gap-1 ${
+              message["from"] === currentUser["phone"]
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            {message["from"] === contact["phone"] && (
+              <div className="w-8 h-8   rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                <img
+                  src={
+                    contact?.avatar
+                      ? `http://localhost:4000/static/${contact?.avatar}`
+                      : "default.webp"
+                  }
+                  alt="img"
+                  className=" h-full rounded-full max-w-none"
+                />
+              </div>
+            )}
             <div
-              key={message.id}
-              className={`flex items-start m-2 ${
-                message.from === "Leen" ? "justify-end" : "justify-start"
+              className={` p-3 rounded-lg shadow w-2/4  max-w-3/4 ${
+                message["from"] === contact["phone"]
+                  ? "bg-[#7269EF] text-white "
+                  : "bg-gray-200 text-gray-900 "
               }`}
             >
-              {message.from === "Doris Brown" && (
-                <div className="mr-2 w-8 h-8 rounded-full bg-[#7269EF] flex items-center justify-center">
-                  <span className="text-white font-bold">D</span>
-                </div>
-              )}
-              <div
-                className={`p-3 rounded-lg shadow ${
-                  message.from === "Doris Brown"
-                    ? "bg-[#7269EF] text-white max-w-[70%]"
-                    : "bg-gray-200 text-gray-900 max-w-[70%]"
-                }`}
-              >
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <strong>{message.from}</strong>
-                  </div>
-                  <div>{message.text}</div>
-                  <div className="text-xs text-gray-300">{message.time}</div>
+              <div className="flex flex-col">
+                <div>{message["message"]}</div>
+                <div
+                  className={`text-xs  ${
+                    message["from"] === contact["phone"]
+                      ? "text-gray-300"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {currentTime(message.time)}
                 </div>
               </div>
-              {message.from === "Leen" && (
-                <div className="ml-2 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-900 font-bold">L</span>
-                </div>
-              )}
             </div>
-          ))}
+            {message["from"] === currentUser["phone"] && (
+              <div className="w-8 h-8   rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                <img
+                  src={
+                    currentUser?.avatar
+                      ? `http://localhost:4000/static/${currentUser?.avatar}`
+                      : "default.webp"
+                  }
+                  alt="img"
+                  className=" h-full rounded-full max-w-none"
+                />
+              </div>
+            )}
+          </div>
+        ))}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="flex items-center mt-4 p-2 border-t border-gray-300">
         <input
           type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage();
-            }
-          }}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type a message..."
           className=" dark:bg-[#303841] flex-1 border rounded-lg p-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7269EF]"
         />
         <button
           onClick={handleSendMessage}
           className="ml-2 bg-[#7269EF] text-white rounded-lg px-4 py-2 disabled:opacity-50"
-          disabled={!inputValue.trim()}
         >
           <RiSendPlane2Fill />
         </button>
