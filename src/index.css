@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.chatsContainer {
+  display: grid;
+  grid-template-columns: 28% 70%;
+  gap: 2%;
+}

@@ -43,18 +43,18 @@ const Layout = () => {
     <Loading />
   ) : (
     userData && (
-      <div className="flex">
-        <div>
+      <div className="flex gap-3 dark:bg-[#303841]">
+        <div className="w-20	">
           <Sidebar />
         </div>
-        <div className="grid grid-cols-7 h-screen w-full">
-          <div className="col-span-2 dark:text-white dark:bg-[#303841] bg-[#F5F7FB] ">
-            <Outlet />
+        <div className="dark:text-white dark:bg-[#303841] bg-[#F5F7FB] h-screen w-11/12	">
+          <Outlet />
+          {/* <div className="  ">
           </div>
 
           <div className="col-span-5 bg-gray-200">
             <Chat />
-          </div>
+          </div> */}
         </div>
       </div>
     )

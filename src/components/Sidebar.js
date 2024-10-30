@@ -30,7 +30,7 @@ const Sidebar = () => {
     "hover:bg-[#F1F0FD] hover:text-[#8C85F2] hover:shadow-lg";
 
   return (
-    <div className="dark:bg-[#36404A] bg-white p-2 h-screen shadow-lg flex flex-col justify-between">
+    <div className="items-center dark:bg-[#36404A] bg-white p-2 h-screen shadow-lg flex flex-col justify-between min-w-full">
       <div className="flex items-center mb-4">
         <div className="w-14 h-14 rounded-full bg-[#7269EF]"></div>
       </div>

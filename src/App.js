@@ -34,6 +34,7 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Contacts from "./components/Contacts";
 import Layout from "./components/Layout";
+import Chat from "./components/Chat";
 
 export default function App() {
   return (
@@ -42,7 +43,9 @@ export default function App() {
         <Route element={<Root />}>
           <Route path="/" element={<Layout />}>
             <Route index element={<Profile />} />
-            <Route path="chats" element={<Chats />} />
+            <Route path="chats" element={<Chats />}>
+              <Route path=":name" element={<Chat />} />
+            </Route>
             <Route path="contacts" element={<Contacts />} />
             <Route path="settings" element={<Setting />} />
           </Route>

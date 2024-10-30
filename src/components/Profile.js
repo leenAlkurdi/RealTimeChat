@@ -6,7 +6,7 @@ function Profile() {
   const toggleAbout = () => setIsAboutOpen(!isAboutOpen);
 
   return (
-    <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md w-full h-screen ">
+    <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md  h-screen w-1/4		">
       <div className="flex flex-col items-center">
         <div className="w-20 h-20 bg-gray-600 rounded-full"></div>
         <h2 className="mt-4 text-lg font-semibold">Ghazal</h2>
