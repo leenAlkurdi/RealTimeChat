@@ -3,20 +3,56 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Loading from "./Loading";
 import { useUserInfo } from "../userContext";
+import { io } from "socket.io-client";
+import Alert from "./Alert";
+const socket = io("http://localhost:4000", {
+  transports: ["websocket"],
+});
 const Layout = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoadind] = useState(true);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  // const [userData, setUserData] = useState(null);
+  const [currentRoom, setCurrentRoom] = useState(null);
+  const [sender, setSender] = useState(null);
+  const [alert, setAlert] = useState(false);
   const { currentUser, setCurrentUser } = useUserInfo();
+
   useEffect(() => {
+    setCurrentRoom(null);
+    socket.on("connection", () => {
+      console.log("connection WebSocket");
+    });
+    socket.on("disconnect", () => {
+      console.log("disconnect WebSocket");
+    });
+    socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
+      console.log("Received new message notification:");
+      if (roomId !== currentRoom) {
+        if (currentUser.phone === to) {
+          setAlert(true);
+          setSender({ from, message });
+          // alert(`New message from ${from}: ${message.message}`);
+        }
+      } else {
+        console.log("Message received in current room.");
+      }
+    });
+
     if (!isDataFetched) {
       fetchProtectedResource();
     }
+    if (alert) {
+      setTimeout(() => {
+        setAlert(false);
+      }, 5000);
+    }
+
     setTimeout(() => {
       setIsLoadind(false);
     }, 2000);
-  }, []);
+    return () => socket.off("newMessageNotification");
+  }, [isDataFetched, currentUser, navigate, sender]);
+
   async function fetchProtectedResource() {
     setIsLoadind(true);
     try {
@@ -30,8 +66,6 @@ const Layout = () => {
         setIsLoadind(false);
       }
       const data = await response.json();
-
-      // setUserData(data);
       setCurrentUser(data);
       setIsDataFetched(true);
     } catch (err) {
@@ -46,11 +80,11 @@ const Layout = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phone: currentUser.phone }), 
+        body: JSON.stringify({ phone: currentUser.phone }),
       });
-  
+
       if (response.ok) {
-        navigate("/login"); 
+        navigate("/login");
       } else {
         console.error("Logout failed");
         const error = await response.json();
@@ -59,24 +93,29 @@ const Layout = () => {
     } catch (error) {
       console.error("Error during logout:", error);
     }
-  
   };
+  const closeAlert = () => {
+    setAlert(false);
+  };
+
   return isLoading ? (
     <Loading />
   ) : (
     currentUser && (
-      <div className="flex gap-3 dark:bg-[#303841]">
+      <div className="flex gap-3 dark:bg-[#303841] relative">
+        {alert && (
+          <Alert
+            from={sender["from"]}
+            message={sender["message"]["message"]}
+            closeAlert={closeAlert}
+          />
+        )}
+
         <div className="w-20	">
           <Sidebar handleLogout={handleLogout} />
         </div>
         <div className="dark:text-white dark:bg-[#303841] bg-[#F5F7FB] h-screen w-11/12	">
           <Outlet />
-          {/* <div className="  ">
-          </div>
-
-          <div className="col-span-5 bg-gray-200">
-            <Chat />
-          </div> */}
         </div>
       </div>
     )

@@ -19,22 +19,23 @@
 import { Outlet, Route, Routes } from "react-router-dom";
 
 import Root from "./components/Root";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
-import Profile from "./components/Profile";
-// const Login = lazy(() => import("./Components/Login"));
-// const Register = lazy(() => import("./components/Register"));
-// const Profile = lazy(() => import("./components/Profile"));
-// const Chats = lazy(() => import("./Components/Chats"));
-// const Contactas = lazy(() => import("./Components/Contacts"));
-// const Setting = lazy(() => import("./Components/Setting"));
-import Chats from "./components/Chats";
-import Setting from "./components/Settings";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Contacts from "./components/Contacts";
 import Layout from "./components/Layout";
-import Chat from "./components/Chat";
+const Login = lazy(() => import("./components/Login"));
+const Register = lazy(() => import("./components/Register"));
+const Profile = lazy(() => import("./components/Profile"));
+const Chats = lazy(() => import("./components/Chats"));
+const Chat = lazy(() => import("./components/Chat"));
+const Contacts = lazy(() => import("./components/Contacts"));
+const Setting = lazy(() => import("./components/Settings"));
+// import Profile from "./components/Profile";
+// import Chats from "./components/Chats";
+// import Setting from "./components/Settings";
+// import Register from "./components/Register";
+// import Login from "./components/Login";
+// import Contacts from "./components/Contacts";
+// import Chat from "./components/Chat";
 
 export default function App() {
   return (
@@ -44,7 +45,7 @@ export default function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Profile />} />
             <Route path="chats" element={<Chats />}>
-              <Route path=":name" element={<Chat />} />
+              <Route path=":phone" element={<Chat />} />
             </Route>
             <Route path="contacts" element={<Contacts />} />
             <Route path="settings" element={<Setting />} />

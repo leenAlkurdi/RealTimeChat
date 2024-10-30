@@ -6,3 +6,22 @@
   grid-template-columns: 28% 70%;
   gap: 2%;
 }
+.chats{
+  height: calc(90vh - 200px);
+}
+::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px; 
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: #7269EF; 
+  border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: #e0e0e0; 
+  border-radius: 10px;
+}

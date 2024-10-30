@@ -6,105 +6,18 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { io } from "socket.io-client";
 import { useUserInfo } from "../userContext";
+import Alert from "./Alert";
 const socket = io("http://localhost:4000", {
   transports: ["websocket"],
 });
-// const userData = [
-//   { id: 1, name: "Alice" },
-//   { id: 2, name: "Bob" },
-//   { id: 3, name: "Charlie" },
-//   { id: 4, name: "Alice" },
-//   { id: 5, name: "Bob" },
-//   { id: 6, name: "Charlie" },
-// ];
-
-const recentMessages = [
-  { id: 1, user: "Alice", message: "Hey there!", time: "10:12 AM" },
-  {
-    id: 2,
-    user: "Bob",
-    message: "Are you coming to the party tonight?",
-    time: "10:15 AM",
-  },
-  {
-    id: 3,
-    user: "Charlie",
-    message: "Let's meet up at the cafe.",
-    time: "10:20 AM",
-  },
-  { id: 4, user: "Alice", message: "How about now?", time: "10:25 AM" },
-  {
-    id: 5,
-    user: "Bob",
-    message: "I'm on my way! Can't wait to see you all!",
-    time: "10:30 AM",
-  },
-  {
-    id: 6,
-    user: "Charlie",
-    message: "See you soon! Looking forward to it.",
-    time: "10:35 AM",
-  },
-  {
-    id: 7,
-    user: "Alice",
-    message: "Thanks for the reminder!",
-    time: "10:40 AM",
-  },
-  { id: 8, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
-  {
-    id: 9,
-    user: "Charlie",
-    message: "Looking forward to it.",
-    time: "10:50 AM",
-  },
-  { id: 10, user: "Alice", message: "Hey there!", time: "10:12 AM" },
-  {
-    id: 12,
-    user: "Bob",
-    message: "Are you coming to the party tonight?",
-    time: "10:15 AM",
-  },
-  {
-    id: 13,
-    user: "Charlie",
-    message: "Let's meet up at the cafe.",
-    time: "10:20 AM",
-  },
-  { id: 14, user: "Alice", message: "How about now?", time: "10:25 AM" },
-  {
-    id: 15,
-    user: "Bob",
-    message: "I'm on my way! Can't wait to see you all!",
-    time: "10:30 AM",
-  },
-  {
-    id: 16,
-    user: "Charlie",
-    message: "See you soon! Looking forward to it.",
-    time: "10:35 AM",
-  },
-  {
-    id: 17,
-    user: "Alice",
-    message: "Thanks for the reminder!",
-    time: "10:40 AM",
-  },
-  { id: 18, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
-  {
-    id: 19,
-    user: "Charlie",
-    message: "Looking forward to it.",
-    time: "10:50 AM",
-  },
-];
-
 const Chats = () => {
   const navigate = useNavigate();
   const { currentUser } = useUserInfo();
   const [currentRoom, setCurrentRoom] = useState(null);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [userChats, setUserChats] = useState([]);
+  const [sender, setSender] = useState(null);
+  const [alert, setAlert] = useState(false);
   const enterRoom = (user) => {
     const roomId = `chat_${Math.min(currentUser.phone, user)}_${Math.max(
       currentUser.phone,
@@ -117,83 +30,105 @@ const Chats = () => {
   };
   useEffect(() => {
     setCurrentRoom(null);
-    if (!currentUser.phone) {
-      navigate("/login");
-    } else {
-      console.log("currentUser.phone", currentUser.phone);
-      socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
-        console.log("Received new message notification:");
-        if (roomId !== currentRoom) {
-          if (currentUser.phone === to) {
-            alert(`New message from ${from}: ${message.message}`);
-          }
-        } else {
-          console.log("Message received in current room.");
+
+    console.log("currentUser.phone", currentUser.phone);
+    socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
+      console.log("Received new message notification:");
+      if (roomId !== currentRoom) {
+        if (currentUser.phone === to) {
+          setAlert(true);
+          setSender({ from, message });
         }
-      });
+      } else {
+        console.log("Message received in current room.");
+      }
+    });
+    if (alert) {
+      setTimeout(() => {
+        setAlert(false);
+      }, 5000);
+    }
+    console.log("ChatuseEffect");
 
-      console.log("ChatuseEffect");
+    socket.on("disconnect", () => {
+      console.log("disconnect WebSocket");
+    });
+    const fetchConnectedUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/connected-users", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await response.json();
+        const realData = data.connectedUsers.filter(
+          (ele) => ele["phone"] !== currentUser["phone"]
+        );
 
-      socket.on("disconnect", () => {
-        console.log("disconnect WebSocket");
-      });
-      const fetchConnectedUsers = async () => {
+        setConnectedUsers(realData);
+      } catch (err) {
+        console.error("fetchConnectedUsers", err.message);
+      }
+    };
+    fetchConnectedUsers();
+    const fetchChats = async () => {
+      if (currentUser.phone) {
         try {
           const response = await fetch(
-            "http://localhost:4000/connected-users",
-            {
-              method: "GET",
-              credentials: "include",
-            }
+            `http://localhost:4000/messages/${currentUser.phone}`
           );
           const data = await response.json();
-          setConnectedUsers(data.connectedUsers);
+
+          setUserChats(
+            data["chats"].filter((ele) => ele !== currentUser.phone)
+          );
         } catch (err) {
-          console.error("fetchConnectedUsers", err.message);
+          console.log(err.message);
         }
-      };
-      fetchConnectedUsers();
-      const fetchChats = async () => {
-        if (currentUser.phone) {
-          try {
-            const response = await fetch(
-              `http://localhost:4000/messages/${currentUser.phone}`
-            );
-            const data = await response.json();
-            const arr = data.messages
-              .map((ele) => ele["from"])
-              .concat(data.messages.map((ele) => ele["to"]));
-            setUserChats(
-              [...new Set(arr)].filter((ele) => ele !== currentUser.phone)
-            );
-          } catch (err) {
-            console.log(err.message);
-          }
-        }
-      };
+      }
+    };
 
-      fetchChats();
-      const handleUserConnected = (newUser) => {
-        setConnectedUsers((prevUsers) => [...prevUsers, newUser]);
-      };
+    fetchChats();
+    const handleUserConnected = (newUser) => {
+      setConnectedUsers((prevUsers) => [...prevUsers, newUser]);
+    };
 
-      const handleUserDisconnected = (disconnectedUser) => {
-        setConnectedUsers((prevUsers) =>
-          prevUsers.filter((user) => user !== disconnectedUser)
-        );
-      };
+    const handleUserDisconnected = (disconnectedUser) => {
+      setConnectedUsers((prevUsers) =>
+        prevUsers.filter((user) => user !== disconnectedUser)
+      );
+    };
 
-      socket.on("userConnected", handleUserConnected);
-      socket.on("userDisconnected", handleUserDisconnected);
-      return () => {
-        socket.off("newMessageNotification");
-        socket.off("userConnected", handleUserConnected);
-        socket.off("userDisconnected", handleUserDisconnected);
-      };
-    }
-  }, [currentRoom, currentUser, navigate]);
+    socket.on("userConnected", handleUserConnected);
+    socket.on("userDisconnected", handleUserDisconnected);
+    return () => {
+      socket.off("newMessageNotification");
+      socket.off("userConnected", handleUserConnected);
+      socket.off("userDisconnected", handleUserDisconnected);
+    };
+  }, [currentRoom, currentUser, navigate, sender]);
+  function convertDate(rawDate) {
+    const date = new Date(rawDate);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${minutesStr} ${amPm}`;
+  }
+  const closeAlert = () => {
+    setAlert(false);
+  };
   return (
     <div className="max-h-screen dark:bg-[#303841] bg-[#F5F7FB] px-5 chatsContainer ">
+      {alert && (
+        <Alert
+          from={sender["from"]}
+          message={sender["message"]["message"]}
+          closeAlert={closeAlert}
+        />
+      )}
       <div className="">
         <div className=" items-center mb-4 ">
           <div className="flex items-center justify-between mb-4">
@@ -258,7 +193,7 @@ const Chats = () => {
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                       </div>
                       <span className="text-center text-sm dark:text-white text-gray-700">
-                        {user.name}
+                        {user["name"]}
                       </span>
                     </div>
                   </SwiperSlide>
@@ -267,8 +202,13 @@ const Chats = () => {
             ) : (
               <SwiperSlide className=" flex justify-center">
                 <div className="relative flex flex-col items-center">
-                  <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
+                  <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                    <img
+                      src="default.webp"
+                      alt="img"
+                      className="w-full h-full rounded-full"
+                    />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-700 border-2 border-white rounded-full"></span>
                   </div>
                   <span className="text-center text-sm dark:text-white text-gray-700">
                     None
@@ -279,29 +219,52 @@ const Chats = () => {
           </Swiper>
         </div>
 
-        <h1 className="font-semibold text-lg mt-4">Recent</h1>
-        <div className="overflow-y-scroll h-128">
-          {recentMessages.map((message) => (
-            <Link key={message.id} to={`${message.id}`}>
+        <h1 className="font-semibold text-lg mt-4">Messages</h1>
+        <div className="overflow-y-auto chats">
+          {userChats.map((chat) => (
+            <Link key={chat?.id ? chat?.id : chat.phone} to={`${chat.phone}`}>
               <div
-                key={message.id}
+                key={chat?.id ? chat?.id : chat.phone}
                 className="flex items-center p-2  hover:bg-gray-200 dark:hover:bg-[#374151] transition-colors duration-200"
               >
-                <div className="w-12 h-12 rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500  rounded-full"></span>
+                <div className="w-8 h-8   rounded-full bg-[#7269EF] flex items-center justify-center relative ">
+                  <img
+                    src={
+                      chat?.avatar
+                        ? `http://localhost:4000/static/${chat?.avatar}`
+                        : "default.webp"
+                    }
+                    alt="img"
+                    className=" h-full rounded-full max-w-none"
+                  />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
                 </div>
                 <div className="ml-3 flex justify-between items-center w-full whitespace-nowrap overflow-hidden">
                   <div className="flex-1 mr-2 overflow-ellipsis overflow-hidden">
-                    <div className="font-semibold">{message.user}</div>
-                    <div
-                      className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap"
-                      title={message.message}
-                    >
-                      {message.message}
+                    <div className="font-semibold">{chat.name}</div>
+                    <div className="text-sm dark:text-[#A7A9B6] text-gray-600 overflow-ellipsis overflow-hidden whitespace-nowrap">
+                      {/* {chat.messages.reduce((latest, current) =>
+                        new Date(current.time) > new Date(latest.time)
+                          ? current
+                          : latest
+                      )} */}
+                      {
+                        chat.messages.reduce((latest, current) =>
+                          new Date(current.time) > new Date(latest.time)
+                            ? current
+                            : latest
+                        )["message"]
+                      }
                     </div>
                   </div>
                   <div className="flex text-xs text-gray-400">
-                    {message.time}
+                    {convertDate(
+                      chat.messages.reduce((latest, current) =>
+                        new Date(current.time) > new Date(latest.time)
+                          ? current
+                          : latest
+                      )["time"]
+                    )}
                   </div>
                 </div>
               </div>
