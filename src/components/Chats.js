@@ -18,86 +18,86 @@ const socket = io("http://localhost:4000", {
 //   { id: 6, name: "Charlie" },
 // ];
 
-const recentMessages = [
-  { id: 1, user: "Alice", message: "Hey there!", time: "10:12 AM" },
-  {
-    id: 2,
-    user: "Bob",
-    message: "Are you coming to the party tonight?",
-    time: "10:15 AM",
-  },
-  {
-    id: 3,
-    user: "Charlie",
-    message: "Let's meet up at the cafe.",
-    time: "10:20 AM",
-  },
-  { id: 4, user: "Alice", message: "How about now?", time: "10:25 AM" },
-  {
-    id: 5,
-    user: "Bob",
-    message: "I'm on my way! Can't wait to see you all!",
-    time: "10:30 AM",
-  },
-  {
-    id: 6,
-    user: "Charlie",
-    message: "See you soon! Looking forward to it.",
-    time: "10:35 AM",
-  },
-  {
-    id: 7,
-    user: "Alice",
-    message: "Thanks for the reminder!",
-    time: "10:40 AM",
-  },
-  { id: 8, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
-  {
-    id: 9,
-    user: "Charlie",
-    message: "Looking forward to it.",
-    time: "10:50 AM",
-  },
-  { id: 10, user: "Alice", message: "Hey there!", time: "10:12 AM" },
-  {
-    id: 12,
-    user: "Bob",
-    message: "Are you coming to the party tonight?",
-    time: "10:15 AM",
-  },
-  {
-    id: 13,
-    user: "Charlie",
-    message: "Let's meet up at the cafe.",
-    time: "10:20 AM",
-  },
-  { id: 14, user: "Alice", message: "How about now?", time: "10:25 AM" },
-  {
-    id: 15,
-    user: "Bob",
-    message: "I'm on my way! Can't wait to see you all!",
-    time: "10:30 AM",
-  },
-  {
-    id: 16,
-    user: "Charlie",
-    message: "See you soon! Looking forward to it.",
-    time: "10:35 AM",
-  },
-  {
-    id: 17,
-    user: "Alice",
-    message: "Thanks for the reminder!",
-    time: "10:40 AM",
-  },
-  { id: 18, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
-  {
-    id: 19,
-    user: "Charlie",
-    message: "Looking forward to it.",
-    time: "10:50 AM",
-  },
-];
+// const recentMessages = [
+//   { id: 1, user: "Alice", message: "Hey there!", time: "10:12 AM" },
+//   {
+//     id: 2,
+//     user: "Bob",
+//     message: "Are you coming to the party tonight?",
+//     time: "10:15 AM",
+//   },
+//   {
+//     id: 3,
+//     user: "Charlie",
+//     message: "Let's meet up at the cafe.",
+//     time: "10:20 AM",
+//   },
+//   { id: 4, user: "Alice", message: "How about now?", time: "10:25 AM" },
+//   {
+//     id: 5,
+//     user: "Bob",
+//     message: "I'm on my way! Can't wait to see you all!",
+//     time: "10:30 AM",
+//   },
+//   {
+//     id: 6,
+//     user: "Charlie",
+//     message: "See you soon! Looking forward to it.",
+//     time: "10:35 AM",
+//   },
+//   {
+//     id: 7,
+//     user: "Alice",
+//     message: "Thanks for the reminder!",
+//     time: "10:40 AM",
+//   },
+//   { id: 8, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
+//   {
+//     id: 9,
+//     user: "Charlie",
+//     message: "Looking forward to it.",
+//     time: "10:50 AM",
+//   },
+//   { id: 10, user: "Alice", message: "Hey there!", time: "10:12 AM" },
+//   {
+//     id: 12,
+//     user: "Bob",
+//     message: "Are you coming to the party tonight?",
+//     time: "10:15 AM",
+//   },
+//   {
+//     id: 13,
+//     user: "Charlie",
+//     message: "Let's meet up at the cafe.",
+//     time: "10:20 AM",
+//   },
+//   { id: 14, user: "Alice", message: "How about now?", time: "10:25 AM" },
+//   {
+//     id: 15,
+//     user: "Bob",
+//     message: "I'm on my way! Can't wait to see you all!",
+//     time: "10:30 AM",
+//   },
+//   {
+//     id: 16,
+//     user: "Charlie",
+//     message: "See you soon! Looking forward to it.",
+//     time: "10:35 AM",
+//   },
+//   {
+//     id: 17,
+//     user: "Alice",
+//     message: "Thanks for the reminder!",
+//     time: "10:40 AM",
+//   },
+//   { id: 18, user: "Bob", message: "Okay! See you!", time: "10:45 AM" },
+//   {
+//     id: 19,
+//     user: "Charlie",
+//     message: "Looking forward to it.",
+//     time: "10:50 AM",
+//   },
+// ];
 
 const Chats = () => {
   const navigate = useNavigate();
