@@ -14,7 +14,7 @@ const Contacts = () => {
   ];
 
   return (
-    <div className="p-4 bg-gray-100 dark:bg-[#303841] rounded-lg shadow-md w-full h-screen ">
+    <div className=" w-1/4 p-4 bg-gray-100 dark:bg-[#303841] rounded-lg shadow-md  h-screen ">
       <div className=" items-center mb-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="ml-10 mt-5 text-2xl font-semibold">Contacts</h1>

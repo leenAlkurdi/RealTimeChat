@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Chat from "./Chat";
 import Loading from "./Loading";
-import Login from "./Login";
+import { useUserInfo } from "../userContext";
 const Layout = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoadind] = useState(true);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  const [userData, setUserData] = useState(null);
+  // const [userData, setUserData] = useState(null);
+  const { currentUser, setCurrentUser } = useUserInfo();
   useEffect(() => {
     if (!isDataFetched) {
       fetchProtectedResource();
     }
     setTimeout(() => {
-      console.log(userData);
       setIsLoadind(false);
     }, 2000);
   }, []);
@@ -32,29 +31,52 @@ const Layout = () => {
       }
       const data = await response.json();
 
-      setUserData(data);
+      // setUserData(data);
+      setCurrentUser(data);
       setIsDataFetched(true);
     } catch (err) {
       console.error("Error fetching data:", err);
     }
   }
-
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone: currentUser.phone }), 
+      });
+  
+      if (response.ok) {
+        navigate("/login"); 
+      } else {
+        console.error("Logout failed");
+        const error = await response.json();
+        console.error(error);
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  
+  };
   return isLoading ? (
     <Loading />
   ) : (
-    userData && (
-      <div className="flex">
-        <div>
-          <Sidebar />
+    currentUser && (
+      <div className="flex gap-3 dark:bg-[#303841]">
+        <div className="w-20	">
+          <Sidebar handleLogout={handleLogout} />
         </div>
-        <div className="grid grid-cols-7 h-screen w-full">
-          <div className="col-span-2 dark:text-white dark:bg-[#303841] bg-[#F5F7FB] ">
-            <Outlet />
+        <div className="dark:text-white dark:bg-[#303841] bg-[#F5F7FB] h-screen w-11/12	">
+          <Outlet />
+          {/* <div className="  ">
           </div>
 
           <div className="col-span-5 bg-gray-200">
             <Chat />
-          </div>
+          </div> */}
         </div>
       </div>
     )

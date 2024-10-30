@@ -1,15 +1,33 @@
 import React, { useState } from "react";
+import { useUserInfo } from "../userContext";
 
 function Profile() {
   const [isAboutOpen, setIsAboutOpen] = useState(true);
 
   const toggleAbout = () => setIsAboutOpen(!isAboutOpen);
+  const currentTime = () => {
+    const now = new Date();
 
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? String(hours).padStart(2, "0") : "12";
+
+    return `${hours}:${minutes}: ${ampm}`;
+  };
+  const { currentUser } = useUserInfo();
   return (
-    <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md w-full h-screen ">
+    <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md  h-screen w-1/4		">
       <div className="flex flex-col items-center">
-        <div className="w-20 h-20 bg-gray-600 rounded-full"></div>
-        <h2 className="mt-4 text-lg font-semibold">Ghazal</h2>
+        <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden">
+          <img
+            src={`http://localhost:4000/static/${currentUser.avatar}`}
+            alt="img"
+            className="w-auto h-auto"
+          />
+        </div>
+        <h2 className="mt-4 text-lg font-semibold">{currentUser.name}</h2>
         <span className="text-[#7269EF] text-sm mb-12">Active</span>
       </div>
       <hr />
@@ -34,15 +52,16 @@ function Profile() {
         {isAboutOpen && (
           <div className="mt-2 text-sm text-gray-600 space-y-1">
             <div className="dark:text-white">
-              <p className="font-semibold dark:text-white">Name: </p> Ghazal
-              Kaadan
+              <p className="font-semibold dark:text-white">Name: </p>{" "}
+              {currentUser.name}
             </div>
             <div className="dark:text-white">
               <p className="font-semibold dark:text-white">Phone number: </p>{" "}
-              +963 937 639 501
+              {currentUser.phone}
             </div>
             <div className="dark:text-white">
-              <p className="font-semibold dark:text-white">Time: </p> 11:40 AM
+              <p className="font-semibold dark:text-white">Time: </p>{" "}
+              {currentTime()}
             </div>
             <div className="dark:text-white">
               <p className="font-semibold dark:text-white">Location: </p>{" "}
