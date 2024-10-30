@@ -6,16 +6,17 @@ function Profile() {
 
   const toggleAbout = () => setIsAboutOpen(!isAboutOpen);
   const currentTime = () => {
-    const now = new Date(); 
-  
-    let hours = now.getHours(); 
-    const minutes = String(now.getMinutes()).padStart(2, '0'); 
-    const ampm = hours >= 12 ? 'PM' : 'AM'; 
-    hours = hours % 12; 
-    hours = hours ? String(hours).padStart(2, '0') : '12'; 
-  
-    return `${hours}:${minutes}: ${ampm}`; 
-  };  const { currentUser } = useUserInfo();
+    const now = new Date();
+
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? String(hours).padStart(2, "0") : "12";
+
+    return `${hours}:${minutes}: ${ampm}`;
+  };
+  const { currentUser } = useUserInfo();
   return (
     <div className="p-4 bg-[#F5F7FB] dark:bg-[#303841]  rounded-lg shadow-md  h-screen w-1/4		">
       <div className="flex flex-col items-center">
@@ -51,15 +52,16 @@ function Profile() {
         {isAboutOpen && (
           <div className="mt-2 text-sm text-gray-600 space-y-1">
             <div className="dark:text-white">
-              <p className="font-semibold dark:text-white">Name: </p> Ghazal
-              Kaadan
+              <p className="font-semibold dark:text-white">Name: </p>{" "}
+              {currentUser.name}
             </div>
             <div className="dark:text-white">
               <p className="font-semibold dark:text-white">Phone number: </p>{" "}
               {currentUser.phone}
             </div>
             <div className="dark:text-white">
-              <p className="font-semibold dark:text-white">Time: </p> {currentTime()}
+              <p className="font-semibold dark:text-white">Time: </p>{" "}
+              {currentTime()}
             </div>
             <div className="dark:text-white">
               <p className="font-semibold dark:text-white">Location: </p>{" "}

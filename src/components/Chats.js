@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import MsgCard from "./MsgCard";
-
+import { io } from "socket.io-client";
+import { useUserInfo } from "../userContext";
+const socket = io("http://localhost:4000", {
+  transports: ["websocket"],
+});
 const userData = [
   { id: 1, name: "Alice" },
   { id: 2, name: "Bob" },
@@ -97,6 +100,98 @@ const recentMessages = [
 ];
 
 const Chats = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useUserInfo();
+  const [currentRoom, setCurrentRoom] = useState(null);
+  const [connectedUsers, setConnectedUsers] = useState([]);
+  const [userChats, setUserChats] = useState([]);
+  const enterRoom = (user) => {
+    const roomId = `chat_${Math.min(currentUser.phone, user)}_${Math.max(
+      currentUser.phone,
+      user
+    )}`;
+    socket.emit("joinChat", roomId);
+    setCurrentRoom(roomId);
+    console.log(`Entering room: ${roomId}`);
+    navigate(`/room/${user}`);
+  };
+  useEffect(() => {
+    setCurrentRoom(null);
+    if (!currentUser.phone) {
+      navigate("/login");
+    } else {
+      console.log("currentUser.phone", currentUser.phone);
+      socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
+        console.log("Received new message notification:");
+        if (roomId !== currentRoom) {
+          if (currentUser.phone === to) {
+            alert(`New message from ${from}: ${message.message}`);
+          }
+        } else {
+          console.log("Message received in current room.");
+        }
+      });
+
+      console.log("ChatuseEffect");
+
+      socket.on("disconnect", () => {
+        console.log("disconnect WebSocket");
+      });
+      const fetchConnectedUsers = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:4000/connected-users",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+          const data = await response.json();
+          setConnectedUsers(data.connectedUsers);
+        } catch (err) {
+          console.error("fetchConnectedUsers", err.message);
+        }
+      };
+      fetchConnectedUsers();
+      const fetchChats = async () => {
+        if (currentUser.phone) {
+          try {
+            const response = await fetch(
+              `http://localhost:4000/messages/${currentUser.phone}`
+            );
+            const data = await response.json();
+            const arr = data.messages
+              .map((ele) => ele["from"])
+              .concat(data.messages.map((ele) => ele["to"]));
+            setUserChats(
+              [...new Set(arr)].filter((ele) => ele !== currentUser.phone)
+            );
+          } catch (err) {
+            console.log(err.message);
+          }
+        }
+      };
+
+      fetchChats();
+      const handleUserConnected = (newUser) => {
+        setConnectedUsers((prevUsers) => [...prevUsers, newUser]);
+      };
+
+      const handleUserDisconnected = (disconnectedUser) => {
+        setConnectedUsers((prevUsers) =>
+          prevUsers.filter((user) => user !== disconnectedUser)
+        );
+      };
+
+      socket.on("userConnected", handleUserConnected);
+      socket.on("userDisconnected", handleUserDisconnected);
+      return () => {
+        socket.off("newMessageNotification");
+        socket.off("userConnected", handleUserConnected);
+        socket.off("userDisconnected", handleUserDisconnected);
+      };
+    }
+  }, [currentRoom, currentUser, navigate]);
   return (
     <div className="max-h-screen dark:bg-[#303841] bg-[#F5F7FB] px-5 chatsContainer ">
       <div className="">
@@ -144,18 +239,40 @@ const Chats = () => {
             style={{ cursor: "grab" }}
             className="my-4"
           >
-            {userData.map((user) => (
-              <SwiperSlide key={user.id} className=" flex justify-center">
+            {connectedUsers.length > 0 ? (
+              [
+                ...new Set(
+                  connectedUsers?.filter((ele) => ele !== currentUser.phone)
+                ),
+              ].map((user, index) => (
+                <>
+                  <li key={index} value={user} onClick={() => enterRoom(user)}>
+                    {user}
+                  </li>
+                  <SwiperSlide key={user?.id} className=" flex justify-center">
+                    <div className="relative flex flex-col items-center">
+                      <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                      </div>
+                      <span className="text-center text-sm dark:text-white text-gray-700">
+                        {user.phone}
+                      </span>
+                    </div>
+                  </SwiperSlide>
+                </>
+              ))
+            ) : (
+              <SwiperSlide className=" flex justify-center">
                 <div className="relative flex flex-col items-center">
                   <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
                   </div>
                   <span className="text-center text-sm dark:text-white text-gray-700">
-                    {user.name}
+                    None
                   </span>
                 </div>
               </SwiperSlide>
-            ))}
+            )}
           </Swiper>
         </div>
 
