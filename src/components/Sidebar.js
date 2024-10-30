@@ -32,7 +32,9 @@ const Sidebar = () => {
   return (
     <div className="items-center dark:bg-[#36404A] bg-white p-2 h-screen shadow-lg flex flex-col justify-between min-w-full">
       <div className="flex items-center mb-4">
-        <div className="w-14 h-14 rounded-full bg-[#7269EF]"></div>
+        <div className="w-24 h-24 rounded-full">
+          <img src="logo.png"></img>
+        </div>
       </div>
 
       <div>
