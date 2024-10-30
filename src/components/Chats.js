@@ -113,7 +113,7 @@ const Chats = () => {
     socket.emit("joinChat", roomId);
     setCurrentRoom(roomId);
     console.log(`Entering room: ${roomId}`);
-    navigate(`/${user.phone}`);
+    navigate(`${user.phone}`);
   };
   useEffect(() => {
     setCurrentRoom(null);
@@ -242,15 +242,14 @@ const Chats = () => {
             {connectedUsers.length > 0 ? (
               [
                 ...new Set(
-                  connectedUsers?.filter((ele) => ele !== currentUser.phone)
+                  connectedUsers?.filter(
+                    (ele) => ele.phone !== currentUser.phone
+                  )
                 ),
               ].map((user, index) => (
                 <>
-                  {/* <li key={index} value={user} onClick={() => enterRoom(user)}>
-                    {user}
-                  </li> */}
                   <SwiperSlide
-                    key={user?.id}
+                    key={user?.id ? user?.id : index}
                     className=" flex justify-center"
                     onClick={() => enterRoom(user)}
                   >
@@ -259,7 +258,7 @@ const Chats = () => {
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                       </div>
                       <span className="text-center text-sm dark:text-white text-gray-700">
-                        {user.phone}
+                        {user.name}
                       </span>
                     </div>
                   </SwiperSlide>
