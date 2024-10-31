@@ -9,6 +9,7 @@ import {
 } from "react-icons/io5";
 import { FaRegMessage } from "react-icons/fa6";
 import { TiContacts } from "react-icons/ti";
+import img from "../Assets/logo.png";
 
 const NAV_ITEMS = [
   { to: "/", icon: <IoPersonOutline />, ariaLabel: "Profile" },
@@ -28,12 +29,11 @@ const Sidebar = ({ handleLogout }) => {
     "block text-2xl p-4 rounded transition duration-300 ease-in-out text-gray-600 text-center " +
     "dark:text-[#d9d6fbcc] dark:hover:bg-[#3C445A] dark:hover:text-[#4C57E0] " +
     "hover:bg-[#F1F0FD] hover:text-[#8C85F2] hover:shadow-lg";
-
   return (
     <div className="items-center dark:bg-[#36404A] bg-white p-2 h-screen shadow-lg flex flex-col justify-between min-w-full">
       <div className="flex items-center mb-4">
         <div className="w-24 h-24 rounded-full">
-          <img src="logo.png" alt="logo" />
+          <img src={`${img}`} alt="logo" />
         </div>
       </div>
 

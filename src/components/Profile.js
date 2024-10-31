@@ -25,7 +25,7 @@ function Profile() {
             src={
               currentUser.avatar
                 ? `http://localhost:4000/static/${currentUser.avatar}`
-                : "default.webp"
+                : "/static/media/default.6cd7e2271add27d8dce7.webp"
             }
             alt="img"
             className="w-full h-full"

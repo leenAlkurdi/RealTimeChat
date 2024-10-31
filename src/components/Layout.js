@@ -15,6 +15,7 @@ const Layout = () => {
   const [currentRoom, setCurrentRoom] = useState(null);
   const [sender, setSender] = useState(null);
   const [alert, setAlert] = useState(false);
+  const [connectedUsers, setConnectedUsers] = useState([]);
   const { currentUser, setCurrentUser } = useUserInfo();
 
   useEffect(() => {
@@ -22,15 +23,16 @@ const Layout = () => {
     socket.on("connection", () => {
       console.log("connection WebSocket");
     });
-    socket.on("disconnect", () => {
-      console.log("disconnect WebSocket");
+    socket.on("disconnect", (number) => {
+      console.log("disconnect WebSocket", number);
     });
     socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
       console.log("Received new message notification:");
       if (roomId !== currentRoom) {
-        if (currentUser.phone === to) {
+        if (currentUser["phone"] === to) {
           setAlert(true);
           setSender({ from, message });
+
           // alert(`New message from ${from}: ${message.message}`);
         }
       } else {
@@ -50,7 +52,25 @@ const Layout = () => {
     setTimeout(() => {
       setIsLoadind(false);
     }, 2000);
-    return () => socket.off("newMessageNotification");
+    const handleUserConnected = (newUser) => {
+      setConnectedUsers((prevUsers) => [...prevUsers, newUser]);
+    };
+
+    const handleUserDisconnected = (disconnectedUser) => {
+      console.log("disconnectedUser");
+      setConnectedUsers((prevUsers) =>
+        prevUsers.filter((user) => user !== disconnectedUser)
+      );
+    };
+
+    socket.on("userConnected", handleUserConnected);
+    socket.on("userDisconnected", handleUserDisconnected);
+    return () => {
+      socket.off("newMessageNotification");
+      socket.off("disconnect");
+      socket.off("userConnected", handleUserConnected);
+      socket.off("userDisconnected", handleUserDisconnected);
+    };
   }, [isDataFetched, currentUser, navigate, sender]);
 
   async function fetchProtectedResource() {
@@ -80,10 +100,14 @@ const Layout = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ phone: currentUser.phone }),
+        body: JSON.stringify({ phone: currentUser["phone"] }),
       });
 
       if (response.ok) {
+        socket.emit("logout", currentUser["phone"]);
+        // socket.emit("userDisconnected", currentUser["phone"]);
+        // socket.emit("disconnect");
+
         navigate("/login");
       } else {
         console.error("Logout failed");

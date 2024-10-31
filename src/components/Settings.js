@@ -7,7 +7,6 @@ const Setting = () => {
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [name, setName] = useState("user name");
   const { currentUser } = useUserInfo();
   const handleSaveName = () => {
     setIsEditingName(false);
@@ -35,7 +34,7 @@ const Setting = () => {
               src={
                 currentUser?.avatar
                   ? `http://localhost:4000/static/${currentUser?.avatar}`
-                  : "default.webp"
+                  : "/static/media/default.6cd7e2271add27d8dce7.webp"
               }
               alt="img"
               className="w-full h-full"
@@ -46,14 +45,15 @@ const Setting = () => {
           </span>
         </div>
         <div className="flex flex-col items-center md:items-start mt-4 md:mt-0">
-          <h2 className="text-lg md:text-xl font-semibold">{name}</h2>
+          <h2 className="text-lg md:text-xl font-semibold">
+            {currentUser.name}
+          </h2>
           <span className="text-gray-500 text-sm md:text-base cursor-pointer dark:text-white">
             Available ▼
           </span>
         </div>
       </div>
 
-      {/* Personal Info Section */}
       <div className="mt-6 ">
         <div
           className=" flex items-center justify-between cursor-pointer"
@@ -73,8 +73,8 @@ const Setting = () => {
                 {isEditingName ? (
                   <input
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={currentUser.name}
+                    // onChange={(e) => setName(e.target.value)}
                     className="border-b-2 border-gray-300 focus:border-[#7269EF] outline-none w-full md:w-auto"
                   />
                 ) : (
