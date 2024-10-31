@@ -7,6 +7,7 @@ import "swiper/swiper-bundle.css";
 import { io } from "socket.io-client";
 import { useUserInfo } from "../userContext";
 import Alert from "./Alert";
+
 const socket = io("http://localhost:4000", {
   transports: ["websocket"],
 });
@@ -19,19 +20,17 @@ const Chats = () => {
   const [sender, setSender] = useState(null);
   const [alert, setAlert] = useState(false);
   const enterRoom = (user) => {
-    const roomId = `chat_${Math.min(currentUser.phone, user)}_${Math.max(
-      currentUser.phone,
+    const roomId = `chat_${Math.min(currentUser["phone"], user)}_${Math.max(
+      currentUser["phone"],
       user
     )}`;
     socket.emit("joinChat", roomId);
     setCurrentRoom(roomId);
     console.log(`Entering room: ${roomId}`);
-    navigate(`${user.phone}`);
+    navigate(`${user["phone"]}`);
   };
   useEffect(() => {
     setCurrentRoom(null);
-
-    console.log("currentUser.phone", currentUser.phone);
     socket.on("newMessageNotification", ({ from, to, message, roomId }) => {
       console.log("Received new message notification:");
       if (roomId !== currentRoom) {
@@ -63,7 +62,7 @@ const Chats = () => {
         const realData = data.connectedUsers.filter(
           (ele) => ele["phone"] !== currentUser["phone"]
         );
-
+        console.log(realData);
         setConnectedUsers(realData);
       } catch (err) {
         console.error("fetchConnectedUsers", err.message);
@@ -77,7 +76,7 @@ const Chats = () => {
             `http://localhost:4000/messages/${currentUser.phone}`
           );
           const data = await response.json();
-
+          console.log(data["chats"].filter((ele) => ele !== currentUser.phone));
           setUserChats(
             data["chats"].filter((ele) => ele !== currentUser.phone)
           );
@@ -93,6 +92,7 @@ const Chats = () => {
     };
 
     const handleUserDisconnected = (disconnectedUser) => {
+      console.log("disconnectedUser");
       setConnectedUsers((prevUsers) =>
         prevUsers.filter((user) => user !== disconnectedUser)
       );
@@ -105,7 +105,7 @@ const Chats = () => {
       socket.off("userConnected", handleUserConnected);
       socket.off("userDisconnected", handleUserDisconnected);
     };
-  }, [currentRoom, currentUser, navigate, sender]);
+  }, [currentRoom, currentUser, sender, navigate]);
   function convertDate(rawDate) {
     const date = new Date(rawDate);
     let hours = date.getHours();
@@ -119,6 +119,13 @@ const Chats = () => {
   }
   const closeAlert = () => {
     setAlert(false);
+  };
+  const findIsOnline = (phone) => {
+    if (connectedUsers.find((ele) => ele["phone"] === phone)) {
+      return true;
+    } else {
+      return false;
+    }
   };
   return (
     <div className="max-h-screen dark:bg-[#303841] bg-[#F5F7FB] px-5 chatsContainer ">
@@ -188,10 +195,21 @@ const Chats = () => {
                     className=" flex justify-center"
                     onClick={() => enterRoom(user)}
                   >
+                    {user.phone}
                     <div className="relative flex flex-col items-center">
                       <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative">
+                        <img
+                          src={
+                            user?.avatar
+                              ? `http://localhost:4000/static/${user?.avatar}`
+                              : "/static/media/default.6cd7e2271add27d8dce7.webp"
+                          }
+                          alt="img"
+                          className=" h-full rounded-full max-w-none"
+                        />
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                       </div>
+
                       <span className="text-center text-sm dark:text-white text-gray-700">
                         {user["name"]}
                       </span>
@@ -204,7 +222,7 @@ const Chats = () => {
                 <div className="relative flex flex-col items-center">
                   <div className="w-12 h-12  rounded-full bg-[#7269EF] flex items-center justify-center relative ">
                     <img
-                      src="default.webp"
+                      src="/static/media/default.6cd7e2271add27d8dce7.webp"
                       alt="img"
                       className="w-full h-full rounded-full"
                     />
@@ -232,12 +250,16 @@ const Chats = () => {
                     src={
                       chat?.avatar
                         ? `http://localhost:4000/static/${chat?.avatar}`
-                        : "default.webp"
+                        : "/static/media/default.6cd7e2271add27d8dce7.webp"
                     }
                     alt="img"
                     className=" h-full rounded-full max-w-none"
                   />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
+                  {findIsOnline(chat.phone) ? (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                  ) : (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 border-2 border-white rounded-full"></span>
+                  )}
                 </div>
                 <div className="ml-3 flex justify-between items-center w-full whitespace-nowrap overflow-hidden">
                   <div className="flex-1 mr-2 overflow-ellipsis overflow-hidden">

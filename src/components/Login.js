@@ -1,7 +1,5 @@
-
-
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Import Link as well
+import { useNavigate, Link } from "react-router-dom";
 import Loading from "./Loading";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:4000", {

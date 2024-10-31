@@ -19,13 +19,16 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
   useEffect(() => {
-    socket.emit("joinChat", { from: currentUser.phone, to: phone });
+    socket.emit("joinChat", {
+      from: currentUser["phone"],
+      to: phone,
+    });
     const handleMessage = ({ from, to, message }) => {
       console.log(
         `Received message from: ${from}, to: ${to}, message: ${message.message}`
       );
 
-      if (from === phone && to === currentUser.phone) {
+      if (from === phone && to === currentUser["phone"]) {
         console.log("Message received:", message);
         setMessages((prev) => [
           ...prev,
@@ -42,20 +45,25 @@ const Chat = () => {
     socket.on("receiveMessage", handleMessage);
     return () => {
       socket.off("receiveMessage", handleMessage);
-      socket.emit("leaveChat", { from: currentUser.phone, to: phone });
+      socket.emit("leaveChat", {
+        from: currentUser["phone"],
+        to: phone,
+      });
     };
-  }, [currentUser, phone]);
+  }, [currentUser, contact]);
   useEffect(() => {
+    console.log(contact);
     console.log("Room useEffect");
     const fetchMessages = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/messages/${currentUser.phone}/${phone}`
+          `http://localhost:4000/messages/${currentUser["phone"]}/${phone}`
         );
         const data = await response.json();
         const sortedMsgs = data.messages.sort(
           (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
         );
+        console.log(data["user"]);
         setContact(data["user"]);
         setMessages(sortedMsgs);
       } catch (err) {
@@ -67,10 +75,10 @@ const Chat = () => {
   }, [currentUser, phone, navigate]);
 
   const handleSendMessage = async () => {
-    if (currentUser.phone && phone && message) {
+    if (currentUser["phone"] && phone && message) {
       try {
         const response = await fetch(
-          `http://localhost:4000/message-send/${currentUser.phone}/${phone}`,
+          `http://localhost:4000/message-send/${currentUser["phone"]}/${phone}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -82,14 +90,14 @@ const Chat = () => {
           alert(`Error: ${errorResponse.error}`);
         } else {
           const msg = {
-            from: currentUser.phone,
+            from: currentUser["phone"],
             to: phone,
             message: message,
             time: new Date().toISOString(),
           };
 
           socket.emit("sendMessage", {
-            from: currentUser.phone,
+            from: currentUser["phone"],
             to: phone,
             message: msg,
           });
@@ -127,7 +135,7 @@ const Chat = () => {
             src={
               contact?.avatar
                 ? `http://localhost:4000/static/${contact?.avatar}`
-                : "default.webp"
+                : "/static/media/default.6cd7e2271add27d8dce7.webp"
             }
             alt="img"
             className=" h-full rounded-full max-w-none"
@@ -154,7 +162,7 @@ const Chat = () => {
                   src={
                     contact?.avatar
                       ? `http://localhost:4000/static/${contact?.avatar}`
-                      : "default.webp"
+                      : "/static/media/default.6cd7e2271add27d8dce7.webp"
                   }
                   alt="img"
                   className=" h-full rounded-full max-w-none"
@@ -187,7 +195,7 @@ const Chat = () => {
                   src={
                     currentUser?.avatar
                       ? `http://localhost:4000/static/${currentUser?.avatar}`
-                      : "default.webp"
+                      : "/static/media/default.6cd7e2271add27d8dce7.webp"
                   }
                   alt="img"
                   className=" h-full rounded-full max-w-none"
